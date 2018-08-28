@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<script src="jquery-1.10.2.min.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<script>
+	$(function(){
+		var t1=new Tab();
+		t1.init('div1',{});
+		
+		var t2=new Tab();
+		t2.init('div2',{
+			events:'mouseover'
+		});
+		
+		var t3=new Tab();
+		t3.init('div3',{
+			events:'mouseover',
+			dlay:200
+		});
+		
+		var t4=new Tab();
+		t4.init('div4',{});
+		t4.nowSel(1);
+		
+		$(t4).on('beforeClick',function(){
+			alert(t4.getContent() );
+		})
+		$(t4).on('afterClick',function(){
+			alert(t4.getContent());
+		})
+		
+	})
+	
+	function Tab(){
+		this.obj=null;
+		this.aInput=null;
+		this.aDiv=null;
+		this.iNow=null;
+		this.settings={
+			events:'click',
+			dlay:0
+		};
+	};
+	
+	Tab.prototype.init=function(id,opt){
+		this.obj=$('#'+id);
+		
+		$.extend(this.settings,opt);
+		this.aInput=this.obj.find('input');
+		this.aDiv=this.obj.find('div');
+		this.change();
+	};
+	
+	Tab.prototype.change=function(){
+		var This=this;
+		var timer=null;
+		this.aInput.on(this.settings.events,function(){
+			if(This.settings.events=='mouseover'&&This.settings.dlay){
+				var _this=this;
+				timer=setTimeout(function(){
+					This.show(_this);
+				},This.settings.dlay);
+			}else{
+				This.show(this);
+			}
+			
+		}).mouseout(function(){
+			clearTimeout(timer);
+		})
+	};
+	
+	Tab.prototype.show=function(obj){
+		$(this).trigger('beforeClick');
+		this.aInput.attr('class','');
+		this.aInput.eq($(obj).index()).attr('class','active');
+		this.aDiv.css('display','none');
+		this.aDiv.eq($(obj).index()).css('display','block');
+		this.iNow=$(obj).index();
+		$(this).trigger('afterClick');
+	}
+	
+	Tab.prototype.nowSel=function(index){
+		this.aInput.attr('class','');
+		this.aInput.eq(index).attr('class','active');
+		this.aDiv.css('display','none');
+		this.aDiv.eq(index).css('display','block');
+		this.iNow=index;
+	}
+	Tab.prototype.getContent=function(){
+		return this.aDiv.eq(this.iNow).html();
+	}
+</script>
+<style>
+.tab div{ width: 100px; height: 100px; border: 1px solid #000; display: none; margin: 5px 0 30px;}
+.tab .active{ background: red;}
+</style>
+<body>
+	<div id="div1" class="tab">
+		<input type="button" value="1"  class="active"/>
+		<input type="button" value="2" />
+		<input type="button" value="3" />
+		<div style="display: block;">1111111</div>
+		<div>2222222</div>
+		<div>3333333</div>
+	</div>
+	
+	<div id="div2" class="tab">
+		<input type="button" value="1"  class="active"/>
+		<input type="button" value="2" />
+		<input type="button" value="3" />
+		<div style="display: block;">1111111</div>
+		<div>2222222</div>
+		<div>3333333</div>
+	</div>
+	
+	<div id="div3" class="tab">
+		<input type="button" value="1"  class="active"/>
+		<input type="button" value="2" />
+		<input type="button" value="3" />
+		<div style="display: block;">1111111</div>
+		<div>2222222</div>
+		<div>3333333</div>
+	</div>
+	
+	<div id="div4" class="tab">
+		<input type="button" value="1"  class="active"/>
+		<input type="button" value="2" />
+		<input type="button" value="3" />
+		<div style="display: block;">1111111</div>
+		<div>2222222</div>
+		<div>3333333</div>
+	</div>
+</body>
+</html>
